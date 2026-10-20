@@ -1,0 +1,36 @@
+{
+  "name": "flappy-bird-lan",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "dev": "tsx watch server/index.ts",
+    "build": "tsc --noEmit && vite build && tsc -p tsconfig.server.json",
+    "start": "NODE_ENV=production node dist-server/server/index.js",
+    "test": "tsx --test tests/*.test.ts",
+    "test:production": "node tests/production-smoke.mjs",
+    "build:vercel": "node scripts/check-deploy.mjs && npm run build",
+    "deploy:link": "node scripts/deploy-link.mjs"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.18.0",
+    "@radix-ui/react-dialog": "^1.1.15",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.468.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "zustand": "^5.0.8"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.1.0",
+    "tsx": "^4.20.0",
+    "typescript": "~5.9.3",
+    "vite": "^7.2.0"
+  }
+}
