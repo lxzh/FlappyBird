@@ -142,14 +142,19 @@ test("daily rankings use the explicit timezone, including the Shanghai midnight 
   assert.equal(dayStart(instant, "UTC"), Date.parse("2026-10-20T00:00:00Z"));
 });
 test("cloud storage refuses missing credentials rather than writing a temporary SQLite file", () => {
-  const url = process.env.TURSO_DATABASE_URL,
-    token = process.env.TURSO_AUTH_TOKEN;
+  const keys = [
+    "TURSO_DATABASE_URL",
+    "TURSO_AUTH_TOKEN",
+    "FLAPPY_BIRD_TURSO_DATABASE_URL",
+    "FLAPPY_BIRD_TURSO_AUTH_TOKEN",
+  ];
+  const saved = keys.map((key) => process.env[key]);
   try {
-    delete process.env.TURSO_DATABASE_URL;
-    delete process.env.TURSO_AUTH_TOKEN;
+    for (const key of keys) delete process.env[key];
     assert.throws(() => createRemoteDatabase(), /TURSO_DATABASE_URL/);
   } finally {
-    if (url !== undefined) process.env.TURSO_DATABASE_URL = url;
-    if (token !== undefined) process.env.TURSO_AUTH_TOKEN = token;
+    keys.forEach((key, i) => {
+      if (saved[i] !== undefined) process.env[key] = saved[i];
+    });
   }
 });

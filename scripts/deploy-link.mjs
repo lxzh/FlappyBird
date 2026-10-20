@@ -22,7 +22,7 @@ if (
 }
 const params = new URLSearchParams({
   "repository-url": repository,
-  env: "TURSO_DATABASE_URL,TURSO_AUTH_TOKEN",
+  env: "FLAPPY_BIRD_TURSO_DATABASE_URL,FLAPPY_BIRD_TURSO_AUTH_TOKEN",
   envDescription:
     "先创建 Turso libSQL 数据库，填写连接 URL 和读写 Token。凭据只用于服务端。",
   envLink: repository,

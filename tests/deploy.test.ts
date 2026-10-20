@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import type { IncomingMessage } from "node:http";
 import { resolveApiUrl } from "../api/game.ts";
+import { getTursoConfig } from "../server/config.ts";
 
 test("Vercel rewrite supports original URLs, destination query and pre-parsed platform query", () => {
   const request = (url: string, query?: Record<string, string | string[]>) =>
@@ -19,7 +20,13 @@ test("Vercel rewrite supports original URLs, destination query and pre-parsed pl
   );
 });
 test("deployment configuration checks required variables without exposing their values", () => {
-  const env = { ...process.env, TURSO_DATABASE_URL: "", TURSO_AUTH_TOKEN: "" };
+  const env = {
+    ...process.env,
+    TURSO_DATABASE_URL: "",
+    TURSO_AUTH_TOKEN: "",
+    FLAPPY_BIRD_TURSO_DATABASE_URL: "",
+    FLAPPY_BIRD_TURSO_AUTH_TOKEN: "",
+  };
   const check = (variables: Record<string, string>) =>
     spawnSync(process.execPath, ["scripts/check-deploy.mjs"], {
       encoding: "utf8",
@@ -34,6 +41,19 @@ test("deployment configuration checks required variables without exposing their 
   });
   assert.equal(valid.status, 0);
   assert.ok(!`${valid.stdout}${valid.stderr}`.includes(secret));
+  const prefixed = check({
+    FLAPPY_BIRD_TURSO_DATABASE_URL: "libsql://prefixed.example",
+    FLAPPY_BIRD_TURSO_AUTH_TOKEN: secret,
+  });
+  assert.equal(prefixed.status, 0);
+  assert.ok(!`${prefixed.stdout}${prefixed.stderr}`.includes(secret));
+  assert.equal(
+    check({
+      FLAPPY_BIRD_TURSO_DATABASE_URL: "libsql://prefixed.example",
+      TURSO_AUTH_TOKEN: secret,
+    }).status,
+    1,
+  );
   assert.equal(
     check({
       TURSO_DATABASE_URL: "file:temporary.sqlite",
@@ -67,6 +87,64 @@ test("deploy button includes the chosen repository and required database variabl
   );
   assert.equal(
     url.searchParams.get("env"),
-    "TURSO_DATABASE_URL,TURSO_AUTH_TOKEN",
+    "FLAPPY_BIRD_TURSO_DATABASE_URL,FLAPPY_BIRD_TURSO_AUTH_TOKEN",
+  );
+});
+
+test("runtime config prefers the complete prefixed pair and preserves legacy compatibility", () => {
+  const legacy = {
+    TURSO_DATABASE_URL: "libsql://legacy.example",
+    TURSO_AUTH_TOKEN: "legacy-token",
+  };
+  assert.deepEqual(getTursoConfig(legacy), {
+    url: "libsql://legacy.example",
+    authToken: "legacy-token",
+  });
+  assert.deepEqual(
+    getTursoConfig({
+      ...legacy,
+      FLAPPY_BIRD_TURSO_DATABASE_URL: " https://prefixed.example ",
+      FLAPPY_BIRD_TURSO_AUTH_TOKEN: " prefixed-token ",
+    }),
+    { url: "https://prefixed.example", authToken: "prefixed-token" },
+  );
+  assert.deepEqual(
+    getTursoConfig({
+      ...legacy,
+      FLAPPY_BIRD_TURSO_DATABASE_URL: "  ",
+      FLAPPY_BIRD_TURSO_AUTH_TOKEN: "",
+    }),
+    { url: "libsql://legacy.example", authToken: "legacy-token" },
+  );
+});
+
+test("runtime config rejects mixed credentials and malformed prefixed URLs without leaking secrets", () => {
+  assert.throws(
+    () =>
+      getTursoConfig({
+        FLAPPY_BIRD_TURSO_DATABASE_URL: "libsql://prefixed.example",
+        TURSO_AUTH_TOKEN: "legacy-token",
+      }),
+    /FLAPPY_BIRD_TURSO_AUTH_TOKEN/,
+  );
+  assert.throws(
+    () =>
+      getTursoConfig({
+        TURSO_DATABASE_URL: "libsql://legacy.example",
+        TURSO_AUTH_TOKEN: "legacy-token",
+        FLAPPY_BIRD_TURSO_AUTH_TOKEN: "prefixed-token",
+      }),
+    /FLAPPY_BIRD_TURSO_DATABASE_URL/,
+  );
+  const secret = "secret-must-not-appear";
+  assert.throws(
+    () =>
+      getTursoConfig({
+        FLAPPY_BIRD_TURSO_DATABASE_URL: `file:${secret}`,
+        FLAPPY_BIRD_TURSO_AUTH_TOKEN: secret,
+      }),
+    (error: Error) =>
+      error.message.includes("FLAPPY_BIRD_TURSO_DATABASE_URL") &&
+      !error.message.includes(secret),
   );
 });

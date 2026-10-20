@@ -1,19 +1,10 @@
-const missing = ["TURSO_DATABASE_URL", "TURSO_AUTH_TOKEN"].filter(
-  (key) => !process.env[key]?.trim(),
-);
-if (missing.length) {
-  console.error(
-    `Vercel 部署缺少环境变量：${missing.join(", ")}。请在 Vercel 项目 Settings → Environment Variables 中配置，或连接 Turso Marketplace 数据库后重新部署。`,
-  );
-  process.exit(1);
-}
+import { getTursoConfig } from "../server/config.ts";
+
 try {
-  const url = new URL(process.env.TURSO_DATABASE_URL);
-  if (!url.hostname || !["libsql:", "https:"].includes(url.protocol))
-    throw new Error();
-} catch {
+  getTursoConfig();
+} catch (error) {
   console.error(
-    "TURSO_DATABASE_URL 必须是有效的 libsql:// 或 https:// 云数据库地址。",
+    `Vercel 部署配置错误：${error.message} 请检查项目 Environment Variables 后重新部署。`,
   );
   process.exit(1);
 }

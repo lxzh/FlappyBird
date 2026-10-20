@@ -2,17 +2,13 @@ import { createClient, type Client } from "@libsql/client/web";
 import type { Leader, Snapshot, Submission } from "../shared/game.ts";
 import { SCHEMA, BOARD_SQL, dayStart } from "./schema.ts";
 import type { GameDatabase, StoredRun } from "./types.ts";
+import { getTursoConfig } from "./config.ts";
 
 export function createRemoteDatabase(injectedClient?: Client): GameDatabase {
   let client: Client;
   if (injectedClient) client = injectedClient;
   else {
-    const url = process.env.TURSO_DATABASE_URL?.trim();
-    const authToken = process.env.TURSO_AUTH_TOKEN?.trim();
-    if (!url || !authToken)
-      throw new Error("请配置 TURSO_DATABASE_URL 和 TURSO_AUTH_TOKEN");
-    if (!["libsql:", "https:"].includes(new URL(url).protocol))
-      throw new Error("云数据库必须使用 libsql:// 或 https:// 地址");
+    const { url, authToken } = getTursoConfig();
     client = createClient({ url, authToken, intMode: "number" });
   }
   let initialization: Promise<void> | undefined;

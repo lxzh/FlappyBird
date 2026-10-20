@@ -8,13 +8,15 @@
 
 创建 **兼容 `@libsql/client` 的 Turso libSQL 数据库**，取得：
 
-| Vercel 环境变量      | 是否必填 | 内容                                                       |
-| -------------------- | -------- | ---------------------------------------------------------- |
-| `TURSO_DATABASE_URL` | 是       | `libsql://数据库名-组织名.turso.io` 或该数据库的 HTTPS URL |
-| `TURSO_AUTH_TOKEN`   | 是       | 该数据库的有效读写 Token                                   |
-| `TZ`                 | 否       | 推荐 `Asia/Shanghai`；未配置时今日排行也默认按此时区计算   |
+| Vercel 环境变量                  | 是否必填 | 内容                                                       |
+| -------------------------------- | -------- | ---------------------------------------------------------- |
+| `FLAPPY_BIRD_TURSO_DATABASE_URL` | 是       | `libsql://数据库名-组织名.turso.io` 或该数据库的 HTTPS URL |
+| `FLAPPY_BIRD_TURSO_AUTH_TOKEN`   | 是       | 该数据库的有效读写 Token                                   |
+| `TZ`                             | 否       | 推荐 `Asia/Shanghai`；未配置时今日排行也默认按此时区计算   |
 
-可以从 [Vercel 的 Turso 集成](https://vercel.com/marketplace/tursocloud) 创建并连接数据库，或在 [Turso](https://turso.tech/) 创建后手动填写环境变量。若集成为变量添加了前缀，请在 Vercel 中设置为上表的名称。
+可以从 [Vercel 的 Turso 集成](https://vercel.com/marketplace/tursocloud) 创建并连接数据库，或在 [Turso](https://turso.tech/) 创建后手动填写环境变量。平台注入的 `FLAPPY_BIRD_` 前缀已受支持，可以直接保留上述变量，无需重命名或额外复制。
+
+也兼容原来的 `TURSO_DATABASE_URL` / `TURSO_AUTH_TOKEN` 整组变量。如果同时配置两组，优先使用带 `FLAPPY_BIRD_` 前缀的一组；该组只填写一项时会明确报错，不会混用另一组的 URL 或 Token。
 
 本项目使用成熟的 libSQL 客户端；若 Turso 控制台提供多种数据库引擎，应选择与 `@libsql/client` 兼容的 libSQL 类型。不要把本地 SQLite 文件路径填写成云数据库地址。
 
@@ -28,7 +30,7 @@
 
 ### 一键部署按钮
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flxzh%2FFlappyBird&env=TURSO_DATABASE_URL%2CTURSO_AUTH_TOKEN&envDescription=%E5%85%88%E5%88%9B%E5%BB%BA+Turso+libSQL+%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%8C%E5%A1%AB%E5%86%99%E8%BF%9E%E6%8E%A5+URL+%E5%92%8C%E8%AF%BB%E5%86%99+Token%E3%80%82%E5%87%AD%E6%8D%AE%E5%8F%AA%E7%94%A8%E4%BA%8E%E6%9C%8D%E5%8A%A1%E7%AB%AF%E3%80%82&envLink=https%3A%2F%2Fgithub.com%2Flxzh%2FFlappyBird&project-name=flappy-bird&repository-name=flappy-bird)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flxzh%2FFlappyBird&env=FLAPPY_BIRD_TURSO_DATABASE_URL%2CFLAPPY_BIRD_TURSO_AUTH_TOKEN&envDescription=%E5%85%88%E5%88%9B%E5%BB%BA+Turso+libSQL+%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%8C%E5%A1%AB%E5%86%99%E8%BF%9E%E6%8E%A5+URL+%E5%92%8C%E8%AF%BB%E5%86%99+Token%E3%80%82%E5%87%AD%E6%8D%AE%E5%8F%AA%E7%94%A8%E4%BA%8E%E6%9C%8D%E5%8A%A1%E7%AB%AF%E3%80%82&envLink=https%3A%2F%2Fgithub.com%2Flxzh%2FFlappyBird&project-name=flappy-bird&repository-name=flappy-bird)
 
 点击按钮后，在 Vercel 中填写两个数据库环境变量并完成部署。
 
