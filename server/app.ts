@@ -4,6 +4,7 @@ import { networkInterfaces } from "node:os";
 import { replay, WORLD, type Submission } from "../shared/game.ts";
 import { createDatabase } from "./database.ts";
 import type { GameDatabase } from "./types.ts";
+import { dayStart } from "./schema.ts";
 
 type Client = { response: ServerResponse; playerId: string };
 const ID = /^[\w-]{8,80}$/;
@@ -65,11 +66,11 @@ export function createApiWithDatabase<D extends GameDatabase>(
     for (const c of clients)
       if (!c.response.destroyed) c.response.write(message);
   };
-  let lastDay = new Date().toDateString();
+  let lastDay = dayStart();
   const heartbeat = serverless
     ? undefined
     : setInterval(() => {
-        const day = new Date().toDateString();
+        const day = dayStart();
         if (day !== lastDay) {
           lastDay = day;
           void broadcast().catch(console.error);

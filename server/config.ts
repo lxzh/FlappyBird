@@ -1,3 +1,17 @@
+// The host's TZ may be a POSIX value (e.g. :UTC), not an IANA identifier.
+// Ranking dates use their own explicit setting, identical at build and runtime.
+export function getLeaderboardTimezone(env: NodeJS.ProcessEnv = process.env) {
+  const timezone = env.LEADERBOARD_TIMEZONE?.trim() || "Asia/Shanghai";
+  try {
+    new Intl.DateTimeFormat("en", { timeZone: timezone }).format();
+  } catch {
+    throw new Error(
+      "LEADERBOARD_TIMEZONE 不是有效时区，请使用 Asia/Shanghai 等 IANA 时区。",
+    );
+  }
+  return timezone;
+}
+
 // Resolve credentials as a pair: never combine two databases' URLs and tokens.
 export function getTursoConfig(env: NodeJS.ProcessEnv = process.env) {
   const pairs = [

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import type { IncomingMessage } from "node:http";
 import { resolveApiUrl } from "../api/game.ts";
-import { getTursoConfig } from "../server/config.ts";
+import { getTursoConfig, getLeaderboardTimezone } from "../server/config.ts";
 
 test("Vercel rewrite supports original URLs, destination query and pre-parsed platform query", () => {
   const request = (url: string, query?: Record<string, string | string[]>) =>
@@ -26,6 +26,7 @@ test("deployment configuration checks required variables without exposing their 
     TURSO_AUTH_TOKEN: "",
     FLAPPY_BIRD_TURSO_DATABASE_URL: "",
     FLAPPY_BIRD_TURSO_AUTH_TOKEN: "",
+    LEADERBOARD_TIMEZONE: "",
   };
   const check = (variables: Record<string, string>) =>
     spawnSync(process.execPath, ["scripts/check-deploy.mjs"], {
@@ -67,7 +68,44 @@ test("deployment configuration checks required variables without exposing their 
       TURSO_AUTH_TOKEN: secret,
       TZ: "Invalid/Timezone",
     }).status,
+    0,
+  );
+  assert.equal(
+    check({
+      FLAPPY_BIRD_TURSO_DATABASE_URL: "libsql://prefixed.example",
+      FLAPPY_BIRD_TURSO_AUTH_TOKEN: secret,
+      TZ: ":UTC",
+      VERCEL: "1",
+    }).status,
+    0,
+  );
+  assert.equal(
+    check({
+      TURSO_DATABASE_URL: "https://test.example",
+      TURSO_AUTH_TOKEN: secret,
+      LEADERBOARD_TIMEZONE: "Invalid/Timezone",
+    }).status,
     1,
+  );
+});
+
+test("leaderboard timezone ignores host TZ and validates only its own explicit setting", () => {
+  for (const TZ of [
+    ":UTC",
+    ":/etc/localtime",
+    "UTC",
+    "Invalid/Timezone",
+    " ",
+  ]) {
+    assert.equal(getLeaderboardTimezone({ TZ }), "Asia/Shanghai");
+  }
+  assert.equal(
+    getLeaderboardTimezone({ LEADERBOARD_TIMEZONE: " UTC\n", TZ: ":UTC" }),
+    "UTC",
+  );
+  assert.throws(
+    () => getLeaderboardTimezone({ LEADERBOARD_TIMEZONE: "Invalid/Timezone" }),
+    /LEADERBOARD_TIMEZONE/,
   );
 });
 test("deploy button includes the chosen repository and required database variables", () => {

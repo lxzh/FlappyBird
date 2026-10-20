@@ -158,3 +158,22 @@ test("cloud storage refuses missing credentials rather than writing a temporary 
     });
   }
 });
+
+test("default daily boundary stays in Shanghai even when the platform injects POSIX TZ", () => {
+  const originalTZ = process.env.TZ;
+  const originalRankingTZ = process.env.LEADERBOARD_TIMEZONE;
+  const instant = Date.parse("2026-10-20T16:00:01Z");
+  try {
+    process.env.TZ = ":UTC";
+    delete process.env.LEADERBOARD_TIMEZONE;
+    assert.equal(dayStart(instant), Date.parse("2026-10-20T16:00:00Z"));
+    process.env.LEADERBOARD_TIMEZONE = "UTC";
+    assert.equal(dayStart(instant), Date.parse("2026-10-20T00:00:00Z"));
+  } finally {
+    if (originalTZ === undefined) delete process.env.TZ;
+    else process.env.TZ = originalTZ;
+    if (originalRankingTZ === undefined)
+      delete process.env.LEADERBOARD_TIMEZONE;
+    else process.env.LEADERBOARD_TIMEZONE = originalRankingTZ;
+  }
+});

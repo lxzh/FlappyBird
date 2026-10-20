@@ -12,9 +12,11 @@
 | -------------------------------- | -------- | ---------------------------------------------------------- |
 | `FLAPPY_BIRD_TURSO_DATABASE_URL` | 是       | `libsql://数据库名-组织名.turso.io` 或该数据库的 HTTPS URL |
 | `FLAPPY_BIRD_TURSO_AUTH_TOKEN`   | 是       | 该数据库的有效读写 Token                                   |
-| `TZ`                             | 否       | 推荐 `Asia/Shanghai`；未配置时今日排行也默认按此时区计算   |
+| `LEADERBOARD_TIMEZONE`           | 否       | 推荐 `Asia/Shanghai`；未配置时今日排行也默认按此时区计算   |
 
 可以从 [Vercel 的 Turso 集成](https://vercel.com/marketplace/tursocloud) 创建并连接数据库，或在 [Turso](https://turso.tech/) 创建后手动填写环境变量。平台注入的 `FLAPPY_BIRD_` 前缀已受支持，可以直接保留上述变量，无需重命名或额外复制。
+
+排行榜时区默认是 `Asia/Shanghai`，无需额外设置。需要更改时请配置 `LEADERBOARD_TIMEZONE`；系统的 `TZ`（包括平台可能注入的 `:UTC`）不会参与排行榜时区校验或计算。
 
 也兼容原来的 `TURSO_DATABASE_URL` / `TURSO_AUTH_TOKEN` 整组变量。如果同时配置两组，优先使用带 `FLAPPY_BIRD_` 前缀的一组；该组只填写一项时会明确报错，不会混用另一组的 URL 或 Token。
 
@@ -92,6 +94,8 @@ Vercel 函数的本地文件不能用作持久数据库，写入 `/tmp` 也不�
 - **匿名娱乐排行。** 每个浏览器保存匿名身份，清理站点数据或更换域名会创建新身份；暂无账号找回、私密房间或完整反作弊。适合和朋友分享挑战。
 
 ## 常见问题
+
+如果旧部署报“TZ 不是有效时区”，请更新到使用 `LEADERBOARD_TIMEZONE` 的修复版本后重新部署。默认北京时间无需设置任何时区变量；自定义排行榜时区时请使用 `LEADERBOARD_TIMEZONE=Asia/Shanghai` 等 IANA 名称。
 
 | 现象                           | 检查                                                                                |
 | ------------------------------ | ----------------------------------------------------------------------------------- |

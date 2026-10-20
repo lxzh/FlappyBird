@@ -1,4 +1,4 @@
-import { getTursoConfig } from "../server/config.ts";
+import { getTursoConfig, getLeaderboardTimezone } from "../server/config.ts";
 
 try {
   getTursoConfig();
@@ -9,11 +9,9 @@ try {
   process.exit(1);
 }
 try {
-  new Intl.DateTimeFormat("en", {
-    timeZone: process.env.TZ || "Asia/Shanghai",
-  }).format();
-} catch {
-  console.error("TZ 不是有效时区，请使用 Asia/Shanghai 等 IANA 时区。");
+  getLeaderboardTimezone();
+} catch (error) {
+  console.error(error.message);
   process.exit(1);
 }
 console.log("Vercel 必要配置检查通过（未输出任何凭据）。");

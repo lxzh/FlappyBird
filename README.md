@@ -31,12 +31,12 @@ npm run dev
 可配置环境变量：
 
 ```sh
-PORT=8080 DATABASE_PATH=./data/flappy.sqlite TZ=Asia/Shanghai npm start
+PORT=8080 DATABASE_PATH=./data/flappy.sqlite LEADERBOARD_TIMEZONE=Asia/Shanghai npm start
 ```
 
 - `PORT`：默认 `3000`。
 - `DATABASE_PATH`：默认 `data/flappy.sqlite`，服务重启后成绩仍保留。
-- `TZ`：默认 `Asia/Shanghai`，用于今日排行的日期边界。
+- `LEADERBOARD_TIMEZONE`：默认 `Asia/Shanghai`，用于今日排行的日期边界，独立于系统 `TZ`。
 - 防火墙需要允许 Node.js 入站连接；访客网络或 AP 隔离可能阻止设备互访。
 - 多网卡设备可在邀请窗口选择其他可用地址。这里只提供局域网访问，不依赖公网服务。
 

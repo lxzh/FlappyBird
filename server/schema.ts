@@ -1,3 +1,5 @@
+import { getLeaderboardTimezone } from "./config.ts";
+
 // Shared SQLite/libSQL schema and ranking query: one source for both deployments.
 export const SCHEMA = `
 CREATE TABLE IF NOT EXISTS players (id TEXT PRIMARY KEY, name TEXT NOT NULL, updated_at INTEGER NOT NULL);
@@ -20,7 +22,7 @@ GROUP BY p.id ORDER BY b.score DESC, MIN(r.finished_at) ASC, p.id ASC LIMIT 100`
 // Explicit IANA timezone instead of relying on the serverless host's UTC clock.
 export function dayStart(
   now = Date.now(),
-  timezone = process.env.TZ || "Asia/Shanghai",
+  timezone = getLeaderboardTimezone(),
 ) {
   const date = new Intl.DateTimeFormat("en-CA", {
     timeZone: timezone,
