@@ -24,14 +24,18 @@
 
 ## 2. 部署代码
 
-把项目推送到自己的 GitHub 仓库。如果尚未配置 Git remote，请先关联真实仓库；部署链接生成器不会假设或创建仓库地址。
+本项目仓库：[lxzh/FlappyBird](https://github.com/lxzh/FlappyBird)。部署前将最新代码推送到该仓库的 `main` 分支。
 
 ### 一键部署按钮
 
-有真实仓库地址后执行：
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flxzh%2FFlappyBird&env=TURSO_DATABASE_URL%2CTURSO_AUTH_TOKEN&envDescription=%E5%85%88%E5%88%9B%E5%BB%BA+Turso+libSQL+%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%8C%E5%A1%AB%E5%86%99%E8%BF%9E%E6%8E%A5+URL+%E5%92%8C%E8%AF%BB%E5%86%99+Token%E3%80%82%E5%87%AD%E6%8D%AE%E5%8F%AA%E7%94%A8%E4%BA%8E%E6%9C%8D%E5%8A%A1%E7%AB%AF%E3%80%82&envLink=https%3A%2F%2Fgithub.com%2Flxzh%2FFlappyBird&project-name=flappy-bird&repository-name=flappy-bird)
+
+点击按钮后，在 Vercel 中填写两个数据库环境变量并完成部署。
+
+重新生成该仓库的部署按钮：
 
 ```sh
-npm run deploy:link -- https://github.com/你的用户名/你的仓库
+npm run deploy:link -- https://github.com/lxzh/FlappyBird
 ```
 
 命令会输出可放进 README 的 **Deploy with Vercel** 按钮 Markdown，按钮链接会在 Vercel 部署流程中要求填写两个必需的 Turso 环境变量。地址必须指向真实且包含当前代码的仓库；公开仓库可使用标准 Deploy Button 克隆流程，私有仓库建议在 Vercel 直接 Import。

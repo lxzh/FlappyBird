@@ -1,8 +1,12 @@
 # Flappy Bird · 在线街机
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flxzh%2FFlappyBird&env=TURSO_DATABASE_URL%2CTURSO_AUTH_TOKEN&envDescription=%E5%85%88%E5%88%9B%E5%BB%BA+Turso+libSQL+%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%8C%E5%A1%AB%E5%86%99%E8%BF%9E%E6%8E%A5+URL+%E5%92%8C%E8%AF%BB%E5%86%99+Token%E3%80%82%E5%87%AD%E6%8D%AE%E5%8F%AA%E7%94%A8%E4%BA%8E%E6%9C%8D%E5%8A%A1%E7%AB%AF%E3%80%82&envLink=https%3A%2F%2Fgithub.com%2Flxzh%2FFlappyBird&project-name=flappy-bird&repository-name=flappy-bird)
+
 完整的 2D Flappy Bird 网页游戏：像素场景、物理碰撞、自动上传成绩、持久化记录，以及多人排行榜。支持本地 / 局域网和 Vercel 公网两种部署，玩家各自独立进行游戏并共享排行。
 
-**部署到公网：请看 [Vercel 一键部署说明](DEPLOYMENT.md)**，配置 Turso 数据库后即可让朋友通过网站链接一起玩。部署配置已经包含在源码中；真实仓库的部署按钮可用 `npm run deploy:link -- 仓库URL` 生成。
+点击上方 **Deploy with Vercel**，填写 `TURSO_DATABASE_URL` 和 `TURSO_AUTH_TOKEN` 即可开始部署。完整步骤与注意事项见 [Vercel 部署说明](DEPLOYMENT.md)。
+
+代码仓库：[lxzh/FlappyBird](https://github.com/lxzh/FlappyBird)。
 
 ## 启动
 
