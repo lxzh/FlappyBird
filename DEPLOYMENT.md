@@ -93,6 +93,13 @@ Vercel 函数的本地文件不能用作持久数据库，写入 `/tmp` 也不�
 - **成绩不自动迁移。** 本机 `data/flappy.sqlite` 的历史成绩不会自动上传到新建的 Turso 数据库。浏览器待上传队列也属于各自域名，换成公网地址后不会自动读取 localhost 的队列。
 - **匿名娱乐排行。** 每个浏览器保存匿名身份，清理站点数据或更换域名会创建新身份；暂无账号找回、私密房间或完整反作弊。适合和朋友分享挑战。
 
+## 访问与运行时排查
+
+构建成功后仍要检查 `/api/health` 和 `/api/info`：前者验证数据库连接，后者验证函数能启动。
+
+- 如果日志是 `ERR_MODULE_NOT_FOUND`，并且编译后的 `api/game.js` 仍在导入 `server/app.ts`，请更新到启用了 `rewriteRelativeImportExtensions` 的版本后重新部署。Vercel 使用根目录的 `tsconfig.json` 编译函数，仅修改本地服务的 `tsconfig.server.json` 不会修复云端函数。
+- 如果浏览器提示证书不匹配或域名打不开，可能是访问网络的 DNS / 路由问题，需要与 API 的 `500` 错误分别排查。Vercel 官方说明 `.vercel.app` 在中国大陆可能无法访问，建议为项目绑定自己的域名，再按控制台提示配置 DNS；自定义域名也无法保证所有网络均可访问。见 [Vercel 官方访问说明](https://vercel.com/kb/guide/accessing-vercel-hosted-sites-from-mainland-china)。
+
 ## 常见问题
 
 如果旧部署报“TZ 不是有效时区”，请更新到使用 `LEADERBOARD_TIMEZONE` 的修复版本后重新部署。默认北京时间无需设置任何时区变量；自定义排行榜时区时请使用 `LEADERBOARD_TIMEZONE=Asia/Shanghai` 等 IANA 名称。
